@@ -118,6 +118,16 @@ public class SlowMap<K,V> extends AbstractMap<K,V>{
         map.keySet().removeAll(map.keySet());
 //        System.out.println(map.keySet());
         System.out.println("map.isEmpty(): " + map.isEmpty());
+
+
+        System.out.println("Hashmap test");
+        Map<String, String> hashMap = new HashMap<String, String>();
+        hashMap.put("A","Capital A");
+        hashMap.put("B","Capital B");
+        hashMap.put("C","Capital C");
+        System.out.println(map.keySet());
+        map.keySet().removeAll(map.keySet());
+        System.out.println(map.keySet());
     }
 }
 
