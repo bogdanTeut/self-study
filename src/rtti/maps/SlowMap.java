@@ -1,4 +1,4 @@
-package rtti;
+package rtti.maps;
 
 import java.util.AbstractMap;
 import java.util.*;
