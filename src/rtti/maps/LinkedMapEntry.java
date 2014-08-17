@@ -9,7 +9,7 @@ public class LinkedMapEntry<K,V> implements Map.Entry<K,V>{
 
     private K key;
     private V value;
-    private LinkedMapEntry<K,V> next;
+    protected LinkedMapEntry<K,V> next;
 
     public LinkedMapEntry(K key, V value) {
         this.key = key;

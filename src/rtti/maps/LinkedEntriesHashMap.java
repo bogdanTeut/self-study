@@ -17,45 +17,27 @@ public class LinkedEntriesHashMap<K,V> extends AbstractMap<K,V>{
 
     @Override
     public V put(K key, V value) {
-        V oldValue = null;
         int index = getIndex(key);
-        if (buckets[index] == null){
-            buckets[index] = new LinkedMapEntry<K,V>(key,value);
+
+        for(LinkedMapEntry<K,V> entry = buckets[index];entry != null;entry = entry.next){
+            if (entry.getKey().equals(key)){
+                V oldValue = entry.getValue();
+                entry.setValue(value);
+                return oldValue;
+            }
         }
-        
-        LinkedList<LinkedMapEntry<K,V>> bucket = buckets[index];
-        LinkedMapEntry<K,V> entry = new LinkedMapEntry<K, V>(key, value);
-        boolean found = false;
-        
-        ListIterator<LinkedMapEntry<K,V>> iterator = bucket.listIterator();
-        while (iterator.hasNext()){
-            LinkedMapEntry<K,V> currentEntry = iterator.next();
-            if (currentEntry.equals(entry)){
-                oldValue = currentEntry.getValue();
-                currentEntry.setValue(value); 
-                found = true;
-            }            
-        }
-        if(!found){
-            bucket.add(entry);
-        }
-        return oldValue;
+        buckets[index] = new LinkedMapEntry<K, V>(key, value);
+        return null;
     }
 
     @Override
     public V get(Object key) {
         int index = getIndex((K)key);
-        LinkedList<LinkedMapEntry<K,V>> bucket = buckets[index];
-        if (bucket!=null){
-            ListIterator<LinkedMapEntry<K,V>> iterator = bucket.listIterator();
-            while (iterator.hasNext()){
-                LinkedMapEntry<K,V> currentEntry = iterator.next();
-                if (currentEntry.getKey().equals(key)){
-                    return  currentEntry.getValue();
-                }
-            }    
+        for(LinkedMapEntry<K,V> entry = buckets[index];entry != null;entry = entry.next){
+            if (entry.getKey().equals(key)){
+                return entry.getValue();
+            }
         }
-        return null;
     }
 
     private int getIndex(K key) {
@@ -64,16 +46,41 @@ public class LinkedEntriesHashMap<K,V> extends AbstractMap<K,V>{
 
     @Override
     public Set<Entry<K, V>> entrySet() {
-        Set<Entry<K, V>> entrySet = new LinkedHashSet<Entry<K, V>>();
-        for (LinkedList<LinkedMapEntry<K,V>> bucket:buckets){
-            if (bucket != null){
-                ListIterator<LinkedMapEntry<K,V>> iterator = bucket.listIterator();
-                while (iterator.hasNext()){
-                    entrySet.add(iterator.next());
-                }                
-            }            
-        }
-        return entrySet;
+        return new AbstractSet<Entry<K, V>>() {
+            @Override
+            public Iterator<Entry<K, V>> iterator() {
+
+                final LinkedMapEntry<K,V> next = null;
+                final LinkedMapEntry<K,V> current = null;
+                int index = 0;
+
+                {
+                    while(index<buckets.length-1 && (next = buckets[index++]) == null);
+                }
+
+                return new Iterator<Entry<K, V>>() {
+                    @Override
+                    public boolean hasNext() {
+                        return false;
+                    }
+
+                    @Override
+                    public Entry<K, V> next() {
+                        next = current.next;
+                    }
+
+                    @Override
+                    public void remove() {
+
+                    }
+                };
+            }
+
+            @Override
+            public int size() {
+                return 0;
+            }
+        };
     }
 
     private static LinkedEntriesHashMap<String, String> getStringStringSlowMap() {
