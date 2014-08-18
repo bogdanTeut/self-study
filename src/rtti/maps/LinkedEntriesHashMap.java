@@ -26,8 +26,13 @@ public class LinkedEntriesHashMap<K,V> extends AbstractMap<K,V>{
                 return oldValue;
             }
         }
-        buckets[index] = new LinkedMapEntry<K, V>(key, value);
+        createEntry(key, value, index);
         return null;
+    }
+
+    void createEntry(K key, V value, int bucketIndex) {
+        LinkedMapEntry<K,V> e = buckets[bucketIndex];
+        buckets[bucketIndex] = new LinkedMapEntry<K, V>(key, value, e);
     }
 
     @Override
@@ -38,10 +43,12 @@ public class LinkedEntriesHashMap<K,V> extends AbstractMap<K,V>{
                 return entry.getValue();
             }
         }
+        return null;
     }
 
     private int getIndex(K key) {
-        return Math.abs(key.hashCode()%SIZE);
+//        return Math.abs(key.hashCode()%SIZE);
+        return key.hashCode() & (buckets.length-1);
     }
 
     @Override
@@ -50,23 +57,27 @@ public class LinkedEntriesHashMap<K,V> extends AbstractMap<K,V>{
             @Override
             public Iterator<Entry<K, V>> iterator() {
 
-                final LinkedMapEntry<K,V> next = null;
-                final LinkedMapEntry<K,V> current = null;
-                int index = 0;
-
-                {
-                    while(index<buckets.length-1 && (next = buckets[index++]) == null);
-                }
-
                 return new Iterator<Entry<K, V>>() {
+                    LinkedMapEntry<K,V> next = null;
+                    LinkedMapEntry<K,V> current = null;
+                    int index = 0;
+
+                    {
+                        while(index<buckets.length-1 && (next = buckets[index++]) == null);
+                    }
+                    
                     @Override
                     public boolean hasNext() {
-                        return false;
+                        return next != null;
                     }
 
                     @Override
                     public Entry<K, V> next() {
-                        next = current.next;
+                        current = next;
+                        if ((next = next.next) == null){
+                            while(index<buckets.length && (next = buckets[index++]) == null); 
+                        }
+                        return current;
                     }
 
                     @Override
@@ -84,20 +95,24 @@ public class LinkedEntriesHashMap<K,V> extends AbstractMap<K,V>{
     }
 
     private static LinkedEntriesHashMap<String, String> getStringStringSlowMap() {
-        LinkedEntriesHashMap<String, String> map = new LinkedEntriesHashMap<String, String>(3);
+        LinkedEntriesHashMap<String, String> map = new LinkedEntriesHashMap<String, String>(6);
         map.put("Bulgaria", "Sofia");
         map.put("Romania", "Bucharest");
         map.put("Hungary", "Budapest");
+        map.put("Holland", "Amsterdam");
+        map.put("UK", "London");
+        map.put("France", "Paris");
         return map;
     }
 
     public static void test(Map<String,String> map) {
         System.out.println(map.getClass().getSimpleName());
         map.putAll(getStringStringSlowMap());
+        System.out.println(map);
 // Map has ‘Set’ behavior for keys:
         map.putAll(getStringStringSlowMap());
         System.out.println(map.keySet());
-// Producing a Collection of the values:
+//// Producing a Collection of the values:
         System.out.println("Values: ");
         System.out.println(map.values());
         System.out.println(map);
@@ -108,32 +123,34 @@ public class LinkedEntriesHashMap<K,V> extends AbstractMap<K,V>{
                 + map.containsValue("Sofia"));
         String key = map.keySet().iterator().next();
         System.out.println("First key in map: " + key);
-        map.remove(key);
-        System.out.println(map.keySet());
-        System.out.println(("map.isEmpty(): " + map.isEmpty()));
-        map.clear();
-        System.out.println(("map.isEmpty(): " + map.isEmpty()));
-        map.putAll(getStringStringSlowMap());
-        System.out.println(map);
-// Operations on the Set change the Map:
-        map.keySet().removeAll(map.keySet());
+//        map.remove(key);
 //        System.out.println(map.keySet());
-        System.out.println("map.isEmpty(): " + map.isEmpty());
-
-
-        System.out.println("Hashmap test");
-        Map<String, String> hashMap = new HashMap<String, String>();
-        hashMap.put("A","Capital A");
-        hashMap.put("B","Capital B");
-        hashMap.put("C","Capital C");
-        System.out.println(map.keySet());
-        map.keySet().removeAll(map.keySet());
-        System.out.println(map.keySet());
+//        System.out.println(("map.isEmpty(): " + map.isEmpty()));
+//        map.clear();
+//        System.out.println(("map.isEmpty(): " + map.isEmpty()));
+//        map.putAll(getStringStringSlowMap());
+//        System.out.println(map);
+//// Operations on the Set change the Map:
+//        map.keySet().removeAll(map.keySet());
+////        System.out.println(map.keySet());
+//        System.out.println("map.isEmpty(): " + map.isEmpty());
+//
+//
+//        System.out.println("Hashmap test");
+//        Map<String, String> hashMap = new HashMap<String, String>();
+//        hashMap.put("A","Capital A");
+//        hashMap.put("B","Capital B");
+//        hashMap.put("C","Capital C");
+//        System.out.println(map.keySet());
+//        map.keySet().removeAll(map.keySet());
+//        System.out.println(map.keySet());
     }
 
 
     public static void main(String[] args) {
         LinkedEntriesHashMap<String, String> map = getStringStringSlowMap();
+//        map.putAll(getStringStringSlowMap());
+
         System.out.println(map);
         System.out.println(map.get("Bulgaria"));
         

@@ -16,6 +16,12 @@ public class LinkedMapEntry<K,V> implements Map.Entry<K,V>{
         this.value = value;
     }
 
+    public LinkedMapEntry(K key, V value, LinkedMapEntry<K,V> next) {
+        this.key = key;
+        this.value = value;
+        this.next = next;
+    }
+
     @Override
     public K getKey() {
         return key;
@@ -46,8 +52,10 @@ public class LinkedMapEntry<K,V> implements Map.Entry<K,V>{
 
     @Override
     public int hashCode() {
-        return (key== null?0:key.hashCode())
-                ^(value== null?0:value.hashCode());
+        int result =17;
+        result = result*37 + key.hashCode();
+        result = result*37 + value.hashCode();
+        return result;
     }
 
     @Override
