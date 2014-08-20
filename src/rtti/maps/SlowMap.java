@@ -22,7 +22,7 @@ public class SlowMap<K,V> extends AbstractMap<K,V>{
         return values;
     }
 
-    public V get(Object key) {
+    public V get(Object key) { java.lang.ref.WeakReference
         int index = keys.indexOf(key); 
         return values.get(index);                
     }
