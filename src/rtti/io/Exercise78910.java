@@ -1,9 +1,6 @@
 package rtti.io;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
@@ -23,6 +20,7 @@ public class Exercise78910 extends LinkedList<String>{
 
     public static void main(String[] args) throws IOException {
         printInReverseOrder(args);
+        new DataInputStream(new FileInputStream(""));
     }
 
     private static void printInReverseOrder(String[] args) throws IOException {
