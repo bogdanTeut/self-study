@@ -1,4 +1,4 @@
-package rtti.io;
+package io;
 
 import java.io.*;
 import java.util.LinkedList;

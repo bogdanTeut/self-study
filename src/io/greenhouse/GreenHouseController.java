@@ -1,7 +1,5 @@
-package rtti.io.greenhouse;
+package io.greenhouse;
 
-import java.util.*;
-        
 
 /**
  * Created by bogdan.teut on 28/08/2014.

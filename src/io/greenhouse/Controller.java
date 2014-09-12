@@ -1,4 +1,4 @@
-package rtti.io.greenhouse;
+package io.greenhouse;
 
 import java.util.*;
 

@@ -1,4 +1,4 @@
-package rtti.io.greenhouse;
+package io.greenhouse;
 
 /**
  * Created by bogdan.teut on 27/08/2014.

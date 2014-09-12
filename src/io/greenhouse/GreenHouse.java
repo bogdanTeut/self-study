@@ -1,14 +1,14 @@
-package rtti.io.greenhouse;
+package io.greenhouse;
 
 import java.io.IOException;
 import java.util.*;
 
-import static rtti.io.greenhouse.GreenHouseController.Restart.RestartFactory;
-import static rtti.io.greenhouse.GreenHouseController.SwitchLightOff.SwitchLightOffFactory;
-import static rtti.io.greenhouse.GreenHouseController.SwitchLightOn.SwitchLightOnFactory;
-import static rtti.io.greenhouse.GreenHouseController.Terminate.TerminateFactory;
-import static rtti.io.greenhouse.GreenHouseController.ThermostatDay.ThermostatDayFactory;
-import static rtti.io.greenhouse.GreenHouseController.ThermostatNight.ThermostatNightFactory;
+import static io.greenhouse.GreenHouseController.Restart.RestartFactory;
+import static io.greenhouse.GreenHouseController.SwitchLightOff.SwitchLightOffFactory;
+import static io.greenhouse.GreenHouseController.SwitchLightOn.SwitchLightOnFactory;
+import static io.greenhouse.GreenHouseController.Terminate.TerminateFactory;
+import static io.greenhouse.GreenHouseController.ThermostatDay.ThermostatDayFactory;
+import static io.greenhouse.GreenHouseController.ThermostatNight.ThermostatNightFactory;
 
 //CLIENT
 public class GreenHouse {
