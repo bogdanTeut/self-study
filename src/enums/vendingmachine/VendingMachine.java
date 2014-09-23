@@ -14,6 +14,8 @@ public class VendingMachine{
     public static State state = State.RESTING;
     public static int amount;
     public static Input selection;
+    
+    EnumMap<State, State> stateEnumMap;
 
     public VendingMachine() {
     }
