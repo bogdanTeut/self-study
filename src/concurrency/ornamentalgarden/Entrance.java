@@ -1,44 +1,24 @@
 package concurrency.ornamentalgarden;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by bogdan on 05/10/14.
+ * Created by bogdan.teut on 07/10/2014.
  */
-public class Entrance implements Runnable{
-    private int number;
-    private static Counter counter = new Counter();
+public class Entrance implements Runnable {
+    
+    private static Count count = new Count();
+    private int counter;
+    private static boolean cancel;
     private static List<Entrance> entrances = new ArrayList<Entrance>();
     private int id;
-    private static volatile boolean cancel;
-
-    @Override
-    public void run() {
-        while(!cancel){
-            synchronized (this) {
-                ++number;
-                counter.increment();
-                System.out.println(this+" total count: "+counter.value());
-            }
-                try {
-                    TimeUnit.MILLISECONDS.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-    }
-
-    public static void cancel (){
-        cancel = true;
-    }
 
     @Override
     public String toString() {
-        return "Entrance id: "+id +" number: "+number;
+        return "Entrance id: "+ id + " counter: " + counter + " total count: "+count.value();
     }
 
     public Entrance(int id) {
@@ -46,36 +26,53 @@ public class Entrance implements Runnable{
         entrances.add(this);
     }
 
-    public static int getTotalCount(){
-        return counter.value();
+    @Override
+    public void run() {
+        while (!isCancel()){
+            counter++;
+            count.increment();
+            System.out.println(this);
+            try {
+                TimeUnit.MILLISECONDS.sleep(100);
+            } catch(InterruptedException e) {
+            }
+        }
+        System.out.println("Stopping "+this);
+    }
+    
+    public static synchronized int sumPartialCounter(){
+        int sum = 0;
+        for(Entrance entrance:entrances){
+            sum += entrance.counter;            
+        }
+        return sum;
     }
 
-    public static int sumEntrances(){
-        int sum = 0;
-        for (Entrance entrance:entrances){
-            sum += entrance.number;
-        };
-        return sum;
+    public static synchronized int totalCounter(){
+        return count.value();
+    }
+    
+    public static void cancel(){
+        cancel = true;
+    }
+
+    public static boolean isCancel() {
+        return cancel;
     }
 
     public static void main(String[] args) throws InterruptedException {
         ExecutorService executorService = Executors.newCachedThreadPool();
-        for (int i=0;i<5;i++){
+        for (int i=0; i<5; i++) {
             executorService.execute(new Entrance(i));
-        }
-        TimeUnit.SECONDS.sleep(3);
+            TimeUnit.SECONDS.sleep(5);
+        } 
+        
         Entrance.cancel();
         executorService.shutdown();
-        try {
-            executorService.awaitTermination(250, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        if (executorService.isShutdown()){
-            System.out.println("Total: "+Entrance.getTotalCount());
-            System.out.println("Sum of entrances: "+Entrance.sumEntrances());
+        
+        if (executorService.awaitTermination(200, TimeUnit.MILLISECONDS)){
+            System.out.println(Entrance.sumPartialCounter()); 
+            System.out.println(Entrance.totalCounter());
         }
     }
-
 }

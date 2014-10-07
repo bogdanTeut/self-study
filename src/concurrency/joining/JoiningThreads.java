@@ -1,4 +1,4 @@
-package concurrency;
+package concurrency.joining;
 
 /**
  * Created by bogdan.teut on 01/10/2014.
@@ -20,6 +20,7 @@ class Sleeper extends Thread{
             sleep(sleepTime);
         } catch (InterruptedException e) {
             System.out.println(Thread.currentThread() + "was interrupted");
+            return;
         }
         System.out.println(Thread.currentThread() + "woke up");
     }
@@ -54,6 +55,6 @@ public class JoiningThreads {
         
         Joiner joinerOne = new Joiner(sleepy);
         Joiner joinerTwo = new Joiner(grumpy);
-        joinerTwo.interrupt();
+        grumpy.interrupt();
     }
 }
