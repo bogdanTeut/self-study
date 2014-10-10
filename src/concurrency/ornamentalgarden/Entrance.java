@@ -35,6 +35,8 @@ public class Entrance implements Runnable {
             try {
                 TimeUnit.MILLISECONDS.sleep(100);
             } catch(InterruptedException e) {
+                System.out.println("Task interrupted");
+                return;
             }
         }
         System.out.println("Stopping "+this);
@@ -67,8 +69,11 @@ public class Entrance implements Runnable {
             TimeUnit.SECONDS.sleep(5);
         } 
         
-        Entrance.cancel();
-        executorService.shutdown();
+//        Entrance.cancel();
+        executorService.shutdownNow();
+        
+//        executorService.
+        
         
         if (executorService.awaitTermination(200, TimeUnit.MILLISECONDS)){
             System.out.println(Entrance.sumPartialCounter()); 

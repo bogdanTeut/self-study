@@ -31,12 +31,13 @@ public class BasicTask implements Runnable{
                 long endTime = System.currentTimeMillis();
                 System.out.println(Thread.currentThread()+" slept for "+ (endTime - startTime));
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                System.out.println("Thread interrupted");
+                return;
             }
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 //        BasicTask basicTask = new BasicTask();
         //basicTask.run();
         ExecutorService executorService = Executors.newCachedThreadPool();
@@ -47,7 +48,8 @@ public class BasicTask implements Runnable{
             //t.start();
             executorService.execute(new BasicTask());
         }
-        executorService.shutdown();
+        TimeUnit.SECONDS.sleep(15);
+        executorService.shutdownNow();
 
         System.out.println("Waiting for base task...");
     }
