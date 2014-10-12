@@ -9,13 +9,13 @@ public class Car {
     public synchronized void waxOff() {
         System.out.println("Waxing Off");
         waxOn = false;
-        notifyAll();
+        notify();
     }
 
     public synchronized void waxOn() {
         System.out.println("Waxing On");
         waxOn = true;
-        notifyAll();
+        notify();
     }
     
     public synchronized void waitForWaxingOff() throws InterruptedException {

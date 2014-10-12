@@ -38,11 +38,11 @@ public class BusyWait {
         @Override
         public void run() {
             try {
-                while (!flag){
+                synchronized (this){
                     System.out.println(flag);
-                    synchronized (this){
-                        System.out.println("Going to wait");
+                    while (!flag){
                         wait();
+                        System.out.println("Going to wait");
                     }
                 }
 
