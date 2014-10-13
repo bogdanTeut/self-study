@@ -5,15 +5,20 @@ package concurrency.waxing;
  */
 public class Car {
     boolean waxOn;
+    String name;
+
+    public Car(String name) {
+        this.name = name;
+    }
 
     public synchronized void waxOff() {
-        System.out.println("Waxing Off");
+        System.out.println("Waxing Off "+this);
         waxOn = false;
         notify();
     }
 
     public synchronized void waxOn() {
-        System.out.println("Waxing On");
+        System.out.println("Waxing On "+this);
         waxOn = true;
         notify();
     }
@@ -28,5 +33,10 @@ public class Car {
         while (waxOn == false){
             wait();
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Car: "+name;
     }
 }

@@ -15,14 +15,16 @@ public class WaxOn implements Runnable {
 
     @Override
     public void run() {
+        System.out.println("Starting the Waxing On for "+car);
         try{
             while (!Thread.interrupted()){
-                TimeUnit.MILLISECONDS.sleep(200);
+                TimeUnit.MILLISECONDS.sleep(1000);
                 car.waxOn();
                 car.waitForWaxingOff();
             }            
         } catch (InterruptedException e){
             System.out.println("WaxOn Interrupted");
         }
+        System.out.println("Exiting WaxOn");
     }
 }

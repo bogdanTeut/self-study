@@ -15,10 +15,11 @@ public class WaxOff implements Runnable {
 
     @Override
     public void run() {
+        System.out.println("Starting the Waxing Off for "+car);
         try {
             while (!Thread.interrupted()){
                 car.waitForWaxingOn();
-                TimeUnit.MILLISECONDS.sleep(200);
+                TimeUnit.MILLISECONDS.sleep(1000);
                 car.waxOff();
             }
         } catch (InterruptedException e) {
