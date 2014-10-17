@@ -9,35 +9,40 @@ import java.util.concurrent.*;
 public class ToastOMatic {
 
     public static void main(String[] args) throws InterruptedException {
-        BlockingQueue<Toast> toastBlockingQueue =  new LinkedBlockingDeque<Toast>();
-        BlockingQueue<Toast> butterBlockingQueue =  new LinkedBlockingDeque<Toast>();
-        BlockingQueue<Toast> eaterButterBlockingQueue =  new LinkedBlockingDeque<Toast>();
+        BlockingQueue<Toast> toastBlockingQueue1 =  new LinkedBlockingDeque<Toast>();
+        BlockingQueue<Toast> butterBlockingQueue1 =  new LinkedBlockingDeque<Toast>();
+        BlockingQueue<Toast> toastBlockingQueue2 =  new LinkedBlockingDeque<Toast>();
+        BlockingQueue<Toast> butterBlockingQueue2 =  new LinkedBlockingDeque<Toast>();
+        BlockingQueue<Toast> eaterBlockingQueue =  new LinkedBlockingDeque<Toast>();
 
         ExecutorService executorService = Executors.newCachedThreadPool();
-        executorService.execute(new Toaster(toastBlockingQueue));
-        executorService.execute(new Butterer(toastBlockingQueue, butterBlockingQueue));
-        executorService.execute(new PeanutButter(toastBlockingQueue, eaterButterBlockingQueue));
+        executorService.execute(new Toaster(toastBlockingQueue1, "PeanutButter line"));
+        executorService.execute(new Butterer(toastBlockingQueue1, butterBlockingQueue1));
+        executorService.execute(new PeanutButterer(butterBlockingQueue1, eaterBlockingQueue));
 
-        executorService.execute(new Toaster(toastBlockingQueue));
-        executorService.execute(new Butterer(toastBlockingQueue, butterBlockingQueue));
-        executorService.execute(new Jelly(toastBlockingQueue, eaterButterBlockingQueue));
+        executorService.execute(new Toaster(toastBlockingQueue2, "Jelly line"));
+        executorService.execute(new Butterer(toastBlockingQueue2, butterBlockingQueue2));
+        executorService.execute(new Jellier(butterBlockingQueue2, eaterBlockingQueue));
 
-
-        executorService.execute(new Eater(eaterButterBlockingQueue));
-//        executorService.execute(new Jamer(butterBlockingQueue, jellyButterBlockingQueue));
-
+        executorService.execute(new Eater(eaterBlockingQueue));
         TimeUnit.SECONDS.sleep(5);
         executorService.shutdownNow();
     }
 
+
 }
 
 enum Status{
-    DRY, BUTTERED, JAMMED, TASTY, PEANUTBUTTERED, JELLIED
+    DRY, BUTTERED, JAMMED, PEANUTBUTTERED, JELLIED, TASTY
 }
 
 class Toast{
     private final int id;
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
     private Status status = Status.DRY;
 
     Toast(int id) {
@@ -69,10 +74,6 @@ class Toast{
         return status;
     }
 
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
     public int getId() {
         return id;
     }
@@ -81,11 +82,13 @@ class Toast{
 class Toaster implements Runnable{
 
     private BlockingQueue<Toast> toastBlockingQueue;
-    private static int count;
+    private int count;
     private Random random = new Random();
+    String description;
 
-    Toaster(BlockingQueue<Toast> toastBlockingQueue) {
+    Toaster(BlockingQueue<Toast> toastBlockingQueue, String description) {
         this.toastBlockingQueue = toastBlockingQueue;
+        this.description = description;
     }
 
     @Override
@@ -93,7 +96,9 @@ class Toaster implements Runnable{
         try {
             while (!Thread.interrupted()) {
                 TimeUnit.MILLISECONDS.sleep(500 + random.nextInt(500));
-                toastBlockingQueue.put(new Toast(count++));
+                Toast toast = new Toast(count++);
+                System.out.println("Created "+toast+" by "+description);
+                toastBlockingQueue.put(toast);
             }
         }catch(InterruptedException ie){
             System.out.println("Toaster interrupted");
@@ -127,14 +132,14 @@ class Butterer implements Runnable{
     }
 }
 
-//class Jamer implements Runnable{
+//class PeanutButterer implements Runnable{
 //
 //    private BlockingQueue<Toast> butterBlockingQueue;
-//    private BlockingQueue<Toast> peanutButterBlockingQueue;
+//    private BlockingQueue<Toast> jamBlockingQueue;
 //
-//    Jamer(BlockingQueue<Toast> butterBlockingQueue, BlockingQueue<Toast> peanutButterBlockingQueue) {
+//    PeanutButterer(BlockingQueue<Toast> butterBlockingQueue, BlockingQueue<Toast> jamBlockingQueue) {
 //        this.butterBlockingQueue = butterBlockingQueue;
-//        this.peanutButterBlockingQueue = peanutButterBlockingQueue;
+//        this.jamBlockingQueue = jamBlockingQueue;
 //    }
 //
 //    @Override
@@ -142,25 +147,24 @@ class Butterer implements Runnable{
 //        try {
 //            while (!Thread.interrupted()) {
 //                Toast toast = butterBlockingQueue.take();
-//                toast.jam();
-//                peanutButterBlockingQueue.put(toast);
+//                toast.peanutButter();
+//                jamBlockingQueue.put(toast);
 //            }
 //        }catch(InterruptedException ie){
-//            System.out.println("Jamer interrupted");
+//            System.out.println("PeanutButterer interrupted");
 //        }
-//        System.out.println("Jamer finishes");
+//        System.out.println("PeanutButterer finishes");
 //    }
 //}
 
-//TO DO
-class PeanutButter implements Runnable{
+class PeanutButterer implements Runnable{
 
     private BlockingQueue<Toast> butterBlockingQueue;
-    private BlockingQueue<Toast> eaterButterBlockingQueue;
+    private BlockingQueue<Toast> jamBlockingQueue;
 
-    PeanutButter(BlockingQueue<Toast> butterBlockingQueue, BlockingQueue<Toast> eaterButterBlockingQueue) {
+    PeanutButterer(BlockingQueue<Toast> butterBlockingQueue, BlockingQueue<Toast> jamBlockingQueue) {
         this.butterBlockingQueue = butterBlockingQueue;
-        this.eaterButterBlockingQueue = eaterButterBlockingQueue;
+        this.jamBlockingQueue = jamBlockingQueue;
     }
 
     @Override
@@ -169,23 +173,23 @@ class PeanutButter implements Runnable{
             while (!Thread.interrupted()) {
                 Toast toast = butterBlockingQueue.take();
                 toast.peanutButter();
-                eaterButterBlockingQueue.put(toast);
+                jamBlockingQueue.put(toast);
             }
         }catch(InterruptedException ie){
-            System.out.println("PeanutButter interrupted");
+            System.out.println("PeanutButterer interrupted");
         }
-        System.out.println("PeanutButter finishes");
+        System.out.println("PeanutButterer finishes");
     }
 }
 
-class Jelly implements Runnable{
+class Jellier implements Runnable{
 
     private BlockingQueue<Toast> butterBlockingQueue;
-    private BlockingQueue<Toast> eaterButterBlockingQueue;
+    private BlockingQueue<Toast> jamBlockingQueue;
 
-    Jelly(BlockingQueue<Toast> butterBlockingQueue, BlockingQueue<Toast> eaterButterBlockingQueue) {
+    Jellier(BlockingQueue<Toast> butterBlockingQueue, BlockingQueue<Toast> jamBlockingQueue) {
         this.butterBlockingQueue = butterBlockingQueue;
-        this.eaterButterBlockingQueue = eaterButterBlockingQueue;
+        this.jamBlockingQueue = jamBlockingQueue;
     }
 
     @Override
@@ -194,19 +198,20 @@ class Jelly implements Runnable{
             while (!Thread.interrupted()) {
                 Toast toast = butterBlockingQueue.take();
                 toast.jelly();
-                eaterButterBlockingQueue.put(toast);
+                jamBlockingQueue.put(toast);
             }
         }catch(InterruptedException ie){
-            System.out.println("Jelly interrupted");
+            System.out.println("PeanutButterer interrupted");
         }
-        System.out.println("Jelly finishes");
+        System.out.println("PeanutButterer finishes");
     }
 }
 
 class Eater implements Runnable{
 
     private BlockingQueue<Toast> jamBlockingQueue;
-    private int count;
+    private int peanutButterCounter;
+    private int jellyCounter;
 
     Eater(BlockingQueue<Toast> jamBlockingQueue) {
         this.jamBlockingQueue = jamBlockingQueue;
@@ -227,8 +232,10 @@ class Eater implements Runnable{
     }
 
     private void checkToast(Toast toast) {
-        if (toast.getId() != count++
-                || (toast.getStatus() != Status.PEANUTBUTTERED & toast.getStatus() != Status.PEANUTBUTTERED) )
-                    throw new IllegalStateException();
+        if ((toast.getId() != peanutButterCounter && toast.getId() != jellyCounter) ||
+                (toast.getStatus() != Status.PEANUTBUTTERED & toast.getStatus() != Status.JELLIED) )
+            throw new IllegalStateException();
+        if (toast.getStatus() == Status.PEANUTBUTTERED) peanutButterCounter++;
+        if (toast.getStatus() == Status.JELLIED) jellyCounter++;
     }
 }

@@ -15,7 +15,7 @@ public class ToastManul {
 
 class ToastCoordinator{
     Toast toast;
-    ToasterManul toasterWithoutBlockingQueues = new ToasterManul(this);
+    ToasterManual toasterWithoutBlockingQueues = new ToasterManual(this);
     ButtererManual buttererWithoutBlockingQueues = new ButtererManual(this);
     JamerManual jamerWithoutBlockingQueues = new JamerManual(this);
     EaterManual eaterWithoutBlockingQueues = new EaterManual(this);
@@ -30,23 +30,24 @@ class ToastCoordinator{
     }
 }
 
-class ToasterManul implements Runnable{
+class ToasterManual implements Runnable{
 
     private int counter;
     private ToastCoordinator toastCoordinator;
 
-    ToasterManul(ToastCoordinator toastCoordinator) {
+    ToasterManual(ToastCoordinator toastCoordinator) {
         this.toastCoordinator = toastCoordinator;
     }
 
     @Override
     public void run() {
-        System.out.println(" Starting ToasterManul");
+        System.out.println(" Starting ToasterManual");
         try {
             while (!Thread.interrupted()) {
                 TimeUnit.MILLISECONDS.sleep(500);
                 toastCoordinator.toast = new Toast(counter++);
                 toastCoordinator.toast.setStatus(Status.DRY);
+                System.out.println(" ToasterManual is creating "+toastCoordinator.toast);
 
                 synchronized (toastCoordinator.buttererWithoutBlockingQueues){
                     toastCoordinator.buttererWithoutBlockingQueues.notifyAll();
@@ -54,14 +55,15 @@ class ToasterManul implements Runnable{
 
                 synchronized (this) {
                     while (toastCoordinator.toast.getStatus() != Status.TASTY) {
-                        System.out.println(" ToasterManul sleeping");
+                        System.out.println(" ToasterManual sleeping");
                         wait();
                     }
-                    System.out.println(" ToasterManul is waking up");
+                    System.out.println(" ToasterManual is waking up ");
+
                 }
             }
         }catch (InterruptedException ie){
-            System.out.println("ToasterManul interrupted");
+            System.out.println("ToasterManual interrupted");
         }
     }
 }
@@ -86,7 +88,7 @@ class ButtererManual implements Runnable{
                         System.out.println(" ButtererManual sleeping");
                         wait();
                     }
-                    System.out.println(" ButtererManual is waking up");
+                    System.out.println(" ButtererManual is waking up for toast "+toastCoordinator.toast);
                 }
                 toastCoordinator.toast.setStatus(Status.BUTTERED);
                 synchronized (toastCoordinator.jamerWithoutBlockingQueues){
@@ -120,7 +122,7 @@ class JamerManual implements Runnable{
                         System.out.println(" JamerManual sleeping");
                         wait();
                     }
-                    System.out.println(" JamerManual is waking up");
+                    System.out.println(" JamerManual is waking up for toast" +toastCoordinator.toast);
                 }
                 toastCoordinator.toast.setStatus(Status.JAMMED);
                 synchronized (toastCoordinator.eaterWithoutBlockingQueues){
@@ -155,7 +157,7 @@ class EaterManual implements Runnable{
                         System.out.println(" EaterManual sleeping");
                         wait();
                     }
-                    System.out.println(" EaterManual is waking up");
+                    System.out.println(" EaterManual is waking up for toast "+toastCoordinator.toast);
                 }
                 toastCoordinator.toast.setStatus(Status.TASTY);
                 checkToast(toastCoordinator.toast);
