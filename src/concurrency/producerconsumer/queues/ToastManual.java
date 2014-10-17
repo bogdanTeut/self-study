@@ -17,13 +17,15 @@ class ToastCoordinator{
     Toast toast;
     ToasterManual toasterWithoutBlockingQueues = new ToasterManual(this);
     ButtererManual buttererWithoutBlockingQueues = new ButtererManual(this);
-    JamerManual jamerWithoutBlockingQueues = new JamerManual(this);
+    PeanutButterrerManual peanutButterWithoutBlockingQueues = new PeanutButterrerManual(this);
+    JellierManual jellyWithoutBlockingQueues = new JellierManual(this);
     EaterManual eaterWithoutBlockingQueues = new EaterManual(this);
     ExecutorService executorService = Executors.newCachedThreadPool();
 
     ToastCoordinator() {
         executorService.execute(buttererWithoutBlockingQueues);
-        executorService.execute(jamerWithoutBlockingQueues);
+        executorService.execute(peanutButterWithoutBlockingQueues);
+        executorService.execute(jellyWithoutBlockingQueues);
         executorService.execute(eaterWithoutBlockingQueues);
         executorService.execute(toasterWithoutBlockingQueues);
 
@@ -47,7 +49,7 @@ class ToasterManual implements Runnable{
                 TimeUnit.MILLISECONDS.sleep(500);
                 toastCoordinator.toast = new Toast(counter++);
                 toastCoordinator.toast.setStatus(Status.DRY);
-                System.out.println(" ToasterManual is creating "+toastCoordinator.toast);
+//                System.out.println(" ToasterManual is creating "+toastCoordinator.toast);
 
                 synchronized (toastCoordinator.buttererWithoutBlockingQueues){
                     toastCoordinator.buttererWithoutBlockingQueues.notifyAll();
@@ -80,6 +82,7 @@ class ButtererManual implements Runnable{
     @Override
     public void run() {
         System.out.println(" Starting ButtererManual");
+        boolean which = false;
         try {
             while (!Thread.interrupted()) {
 
@@ -91,10 +94,21 @@ class ButtererManual implements Runnable{
                     System.out.println(" ButtererManual is waking up for toast "+toastCoordinator.toast);
                 }
                 toastCoordinator.toast.setStatus(Status.BUTTERED);
-                synchronized (toastCoordinator.jamerWithoutBlockingQueues){
-                    toastCoordinator.jamerWithoutBlockingQueues.notifyAll();
+//                synchronized (toastCoordinator.jamerWithoutBlockingQueues){
+//                    toastCoordinator.jamerWithoutBlockingQueues.notifyAll();
+//                }
+                if (which){
+                    synchronized (toastCoordinator.peanutButterWithoutBlockingQueues){
+                        toastCoordinator.peanutButterWithoutBlockingQueues.notifyAll();
+                    }
+                    which = false;
+                }else{
+                    synchronized (toastCoordinator.jellyWithoutBlockingQueues){
+                        toastCoordinator.jellyWithoutBlockingQueues.notifyAll();
+                    }
+                    which = true;
                 }
-
+                System.out.println(which);
             }
         }catch (InterruptedException ie){
             System.out.println("ButtererManual interrupted");
@@ -102,36 +116,75 @@ class ButtererManual implements Runnable{
     }
 }
 
-class JamerManual implements Runnable{
+class PeanutButterrerManual implements Runnable{
 
     private int counter;
     private ToastCoordinator toastCoordinator;
 
-    JamerManual(ToastCoordinator toastCoordinator) {
+    PeanutButterrerManual(ToastCoordinator toastCoordinator) {
         this.toastCoordinator = toastCoordinator;
     }
 
     @Override
     public void run() {
-        System.out.println(" Starting JamerManual");
+        System.out.println(" Starting PeanutButterrerManual");
         try {
             while (!Thread.interrupted()) {
+//                synchronized (toastCoordinator){
 
-                synchronized (this) {
-                    while (toastCoordinator.toast == null || toastCoordinator.toast.getStatus() != Status.BUTTERED) {
-                        System.out.println(" JamerManual sleeping");
-                        wait();
+                    synchronized (this) {
+                        while (toastCoordinator.toast == null || toastCoordinator.toast.getStatus() != Status.BUTTERED) {
+                            System.out.println(" PeanutButterrerManual sleeping");
+                            wait();
+                        }
+                        System.out.println(" PeanutButterrerManual is waking up for toast" +toastCoordinator.toast);
                     }
-                    System.out.println(" JamerManual is waking up for toast" +toastCoordinator.toast);
-                }
-                toastCoordinator.toast.setStatus(Status.JAMMED);
-                synchronized (toastCoordinator.eaterWithoutBlockingQueues){
-                    toastCoordinator.eaterWithoutBlockingQueues.notifyAll();
+
+                    toastCoordinator.toast.setStatus(Status.PEANUTBUTTERED);
+                    synchronized (toastCoordinator.eaterWithoutBlockingQueues){
+                        toastCoordinator.eaterWithoutBlockingQueues.notifyAll();
+                    }
                 }
 
-            }
+//            }
         }catch (InterruptedException ie){
-            System.out.println("JamerManual interrupted");
+            System.out.println("PeanutButterrerManual interrupted");
+        }
+    }
+}
+
+
+class JellierManual implements Runnable{
+
+    private int counter;
+    private ToastCoordinator toastCoordinator;
+
+    JellierManual(ToastCoordinator toastCoordinator) {
+        this.toastCoordinator = toastCoordinator;
+    }
+
+    @Override
+    public void run() {
+        System.out.println(" Starting JellierManual");
+        try {
+            while (!Thread.interrupted()) {
+//                synchronized (toastCoordinator){
+                    synchronized (this) {
+                        while (toastCoordinator.toast == null || toastCoordinator.toast.getStatus() != Status.BUTTERED) {
+                            System.out.println(" JellierManual sleeping");
+                            wait();
+                        }
+                        System.out.println(" JellierManual is waking up for toast" +toastCoordinator.toast);
+                    }
+                    toastCoordinator.toast.setStatus(Status.JELLIED);
+                    synchronized (toastCoordinator.eaterWithoutBlockingQueues){
+                        toastCoordinator.eaterWithoutBlockingQueues.notifyAll();
+                    }
+                }
+
+//            }
+        }catch (InterruptedException ie){
+            System.out.println("JellierManual interrupted");
         }
     }
 }
@@ -153,7 +206,8 @@ class EaterManual implements Runnable{
             while (!Thread.interrupted()) {
 
                 synchronized (this) {
-                    while (toastCoordinator.toast == null || toastCoordinator.toast.getStatus() != Status.JAMMED) {
+                    while (toastCoordinator.toast == null ||
+                            (toastCoordinator.toast.getStatus() != Status.PEANUTBUTTERED && toastCoordinator.toast.getStatus() != Status.JELLIED)) {
                         System.out.println(" EaterManual sleeping");
                         wait();
                     }
@@ -162,7 +216,7 @@ class EaterManual implements Runnable{
                 toastCoordinator.toast.setStatus(Status.TASTY);
                 checkToast(toastCoordinator.toast);
                 System.out.println("Eating "+toastCoordinator.toast);
-                if(count == 10) {
+                if(count++ == 10) {
                     System.out.println("Out of food, closing");
                     toastCoordinator.executorService.shutdownNow();
                 }
@@ -177,7 +231,7 @@ class EaterManual implements Runnable{
     }
 
     private void checkToast(Toast toast) {
-        if (toast.getId() != count++ || toast.getStatus() != Status.TASTY) throw new IllegalStateException();
+//        if (toast.getId() != count++ || toast.getStatus() != Status.TASTY) throw new IllegalStateException();
     }
 }
 
