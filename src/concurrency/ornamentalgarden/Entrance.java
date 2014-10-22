@@ -1,6 +1,7 @@
 package concurrency.ornamentalgarden;
 
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -15,23 +16,27 @@ public class Entrance implements Runnable {
     private static boolean cancel;
     private static List<Entrance> entrances = new ArrayList<Entrance>();
     private int id;
+    private CountDownLatch countDownLatch;
 
     @Override
     public String toString() {
         return "Entrance id: "+ id + " counter: " + counter + " total count: "+count.value();
     }
 
-    public Entrance(int id) {
+    public Entrance(int id, CountDownLatch countDownLatch) {
         this.id = id;
         entrances.add(this);
+        this.countDownLatch = countDownLatch;
     }
 
     @Override
     public void run() {
         while (!isCancel()){
-            counter++;
-            count.increment();
-            System.out.println(this);
+            synchronized (this) {
+                counter++;
+                count.increment();
+                System.out.println(this);
+            }
             try {
                 TimeUnit.MILLISECONDS.sleep(100);
             } catch(InterruptedException e) {
@@ -39,6 +44,7 @@ public class Entrance implements Runnable {
                 return;
             }
         }
+        countDownLatch.countDown();
         System.out.println("Stopping "+this);
     }
     
@@ -63,21 +69,32 @@ public class Entrance implements Runnable {
     }
 
     public static void main(String[] args) throws InterruptedException {
+        final CountDownLatch countDownLatch = new CountDownLatch(5);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    countDownLatch.await();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println(Entrance.sumPartialCounter());
+                System.out.println(Entrance.totalCounter());
+            }
+        }){
+        }.start();
+
         ExecutorService executorService = Executors.newCachedThreadPool();
         for (int i=0; i<5; i++) {
-            executorService.execute(new Entrance(i));
-            TimeUnit.SECONDS.sleep(5);
-        } 
-        
-//        Entrance.cancel();
-        executorService.shutdownNow();
-        
-//        executorService.
-        
-        
-        if (executorService.awaitTermination(200, TimeUnit.MILLISECONDS)){
-            System.out.println(Entrance.sumPartialCounter()); 
-            System.out.println(Entrance.totalCounter());
+            executorService.execute(new Entrance(i, countDownLatch));
         }
+
+        TimeUnit.SECONDS.sleep(5);
+
+        Entrance.cancel();
+        executorService.shutdown();
+        System.out.println(countDownLatch.getCount());
+
     }
 }
