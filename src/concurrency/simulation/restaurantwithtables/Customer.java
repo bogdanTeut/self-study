@@ -1,4 +1,7 @@
-package concurrency.simulation.restaurant;
+package concurrency.simulation.restaurantwithtables;
+
+import concurrency.simulation.restaurant.Course;
+import concurrency.simulation.restaurant.Food;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -13,13 +16,17 @@ public class Customer implements Runnable{
     private int id = counter++;
     private SynchronousQueue<Plate> meals = new SynchronousQueue<Plate>();
     private CountDownLatch countDownLatch;
+    private Table table;
+    private TablePool tablePool;
 
     private WaitingPerson waitingPerson;
 
-    public Customer(WaitingPerson waitingPerson, CountDownLatch countDownLatch, ExecutorService executorService) {
+    public Customer(WaitingPerson waitingPerson, CountDownLatch countDownLatch, ExecutorService executorService, Table table, TablePool tablePool) {
         this.waitingPerson = waitingPerson;
         this.countDownLatch = countDownLatch;
         this.executorService = executorService;
+        this.table = table;
+        this.tablePool = tablePool;
     }
 
     public void deliverPlate(Plate plate) throws InterruptedException {
@@ -32,18 +39,21 @@ public class Customer implements Runnable{
             for (Course course:Course.values()){
                 Food food = course.randomValues();
                 System.out.println(this+" ordering "+ food);
-                waitingPerson.placeOrder(new Order(food, this, waitingPerson));
+                waitingPerson.placeOrder(new OrderTicket(food, this, waitingPerson));
                 //eating is represented here by take
                 Plate plate = meals.take();
                 System.out.println(this+" eating "+plate.getFood());
             }
+
+            System.out.println(this+" is done");
             countDownLatch.countDown();
             countDownLatch.await();
-            executorService.shutdownNow();
+            tablePool.checkIn(table);
+            System.out.println(table+" checked in");
+
         }catch (InterruptedException ie){
             System.out.println(this+" is interrupted");
         }
-        System.out.println(this+" is done");
     }
 
     @Override

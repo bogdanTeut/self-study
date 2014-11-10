@@ -1,14 +1,16 @@
-package concurrency.simulation.restaurant;
+package concurrency.simulation.restaurantwithtables;
+
+import concurrency.simulation.restaurant.Food;
 
 /**
  * Created by bogdan on 09/11/14.
  */
-public class Order {
+public class OrderTicket {
     private WaitingPerson waitingPerson;
     private Food food;
     private Customer customer;
 
-    public Order(Food food, Customer customer, WaitingPerson waitingPerson) {
+    public OrderTicket(Food food, Customer customer, WaitingPerson waitingPerson) {
         this.food = food;
         this.customer = customer;
         this.waitingPerson = waitingPerson;

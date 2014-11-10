@@ -1,10 +1,6 @@
 package concurrency.simulation.restaurant;
 
 import java.util.Random;
-/**
- * Created by bogdan on 09/11/14.
- */
-interface Food{}
 
 enum Appetizer implements Food{
     SALAD, SOUP, SPRING_ROLLS;

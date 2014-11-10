@@ -1,4 +1,4 @@
-package concurrency.simulation.restaurant;
+package concurrency.simulation.restaurantwithtables;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -29,9 +29,9 @@ public class WaitingPerson implements Runnable{
         }
     }
 
-    public void placeOrder(Order order) throws InterruptedException {
-        System.out.println(this+" placing "+order);
-        restaurant.orders.put(order);
+    public void placeOrder(OrderTicket orderTicket) throws InterruptedException {
+        System.out.println(this+" placing "+ orderTicket);
+        restaurant.orderTickets.put(orderTicket);
     }
 
     @Override

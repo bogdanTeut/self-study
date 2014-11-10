@@ -1,4 +1,6 @@
-package concurrency.simulation.restaurant;
+package concurrency.simulation.restaurantwithtables;
+
+import concurrency.simulation.restaurant.Food;
 
 /**
  * Created by bogdan on 09/11/14.

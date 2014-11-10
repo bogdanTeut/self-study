@@ -1,4 +1,4 @@
-package concurrency.simulation.restaurant;
+package concurrency.simulation.restaurantwithtables;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
