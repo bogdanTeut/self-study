@@ -10,8 +10,8 @@ import java.util.concurrent.Executors;
 public class RestaurantWithQueues {
     public static void main(String[] args) throws IOException {
         ExecutorService executorService = Executors.newCachedThreadPool();
-        executorService.execute(new Restaurant(executorService, 5, 2));
+        executorService.execute(new Restaurant(executorService, 5, 2, 5));
         //System.in.read();
-        System.out.println("Restaurant with queues done");
+        //System.out.println("Restaurant with queues done");
     }
 }

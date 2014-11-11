@@ -18,13 +18,13 @@ public class Restaurant implements Runnable {
     private ExecutorService executorService;
     private List<WaitingPerson> waitingPersonList;
     private List<Chef> chefList;
-    private List<Table> tableList;
     public LinkedBlockingQueue<OrderTicket> orderTickets = new LinkedBlockingQueue<OrderTicket>();
     private Random random = new Random();
     private TablePool tablePool;
 
     public Restaurant(ExecutorService executorService, int numberOfWaitingPersons, int numberOfChefs, int numberOfTables) {
         this.executorService = executorService;
+        tablePool = new TablePool(numberOfTables);
 
         waitingPersonList = new ArrayList<WaitingPerson>();
         for (int i = 0; i <numberOfWaitingPersons ; i++) {
@@ -40,28 +40,41 @@ public class Restaurant implements Runnable {
             executorService.execute(chef);
         }
 
-        tableList = new ArrayList<Table>();
-        for (int i = 0; i <numberOfTables ; i++) {
-            tableList.add(new Table());
-        }
-
-        tablePool = new TablePool(5);
     }
 
     @Override
     public void run() {
+        int counter =0;
         try{
-            while (!Thread.interrupted()){
+            while (counter++<100){
+                final Table table = tablePool.checkOut();
+                int numberOfCustomers =  random.nextInt(3)+2;
+                System.out.println("We'd like a table of "+numberOfCustomers+" customers");
+                table.setNumberOfCustomers(numberOfCustomers);
 
-                Table table = tablePool.checkOut();
-                int numberOfCustomers =  random.nextInt(5);
-                CountDownLatch countDownLatch = new CountDownLatch(numberOfCustomers);
+                final CountDownLatch countDownLatch = new CountDownLatch(numberOfCustomers);
+                WaitingPerson waitingPerson = waitingPersonList.get(random.nextInt(waitingPersonList.size()));
+                System.out.println(waitingPerson+" will take care of "+table);
                 for (int i=0;i<numberOfCustomers;i++){
-                    Customer customer = new Customer(waitingPersonList.get(random.nextInt(waitingPersonList.size())), countDownLatch, executorService, table, tablePool);
+                    Customer customer = new Customer(waitingPerson, countDownLatch, executorService, table);
+                    table.customerList.add(customer);
+                    System.out.println("Adding "+customer+" to "+table);
                     executorService.execute(customer);
                     TimeUnit.MILLISECONDS.sleep(100);
                 }
 
+                executorService.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            countDownLatch.await();
+                            System.out.println("Checking in " + table);
+                            tablePool.checkIn(table);
+                        } catch (InterruptedException e) {
+                            System.out.println("Table checker interrupted");
+                        }
+                    }
+                });
             }
         }catch (InterruptedException ie){
             System.out.println("Restaurant closing time");

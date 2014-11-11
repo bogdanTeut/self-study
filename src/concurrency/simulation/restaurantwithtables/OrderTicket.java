@@ -2,17 +2,18 @@ package concurrency.simulation.restaurantwithtables;
 
 import concurrency.simulation.restaurant.Food;
 
+import java.util.*;
+
 /**
  * Created by bogdan on 09/11/14.
  */
 public class OrderTicket {
     private WaitingPerson waitingPerson;
-    private Food food;
-    private Customer customer;
+    private Table table;
+    Map<Customer, Food> individualOrders = Collections.synchronizedMap(new HashMap<Customer, Food>());
 
-    public OrderTicket(Food food, Customer customer, WaitingPerson waitingPerson) {
-        this.food = food;
-        this.customer = customer;
+    public OrderTicket(Table table, WaitingPerson waitingPerson) {
+        this.table = table;
         this.waitingPerson = waitingPerson;
     }
 
@@ -20,16 +21,12 @@ public class OrderTicket {
         return waitingPerson;
     }
 
-    public Customer getCustomer() {
-        return customer;
-    }
-
-    public Food getFood() {
-        return food;
-    }
-
     @Override
     public String toString() {
-        return "Order from "+waitingPerson+" containing "+food+" for "+customer;
+        return "Order from "+waitingPerson+" containing "+individualOrders+" for "+table;
+    }
+
+    public Table getTable() {
+        return table;
     }
 }

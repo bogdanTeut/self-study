@@ -17,16 +17,14 @@ public class Customer implements Runnable{
     private SynchronousQueue<Plate> meals = new SynchronousQueue<Plate>();
     private CountDownLatch countDownLatch;
     private Table table;
-    private TablePool tablePool;
 
     private WaitingPerson waitingPerson;
 
-    public Customer(WaitingPerson waitingPerson, CountDownLatch countDownLatch, ExecutorService executorService, Table table, TablePool tablePool) {
+    public Customer(WaitingPerson waitingPerson, CountDownLatch countDownLatch, ExecutorService executorService, Table table) {
         this.waitingPerson = waitingPerson;
         this.countDownLatch = countDownLatch;
         this.executorService = executorService;
         this.table = table;
-        this.tablePool = tablePool;
     }
 
     public void deliverPlate(Plate plate) throws InterruptedException {
@@ -39,17 +37,15 @@ public class Customer implements Runnable{
             for (Course course:Course.values()){
                 Food food = course.randomValues();
                 System.out.println(this+" ordering "+ food);
-                waitingPerson.placeOrder(new OrderTicket(food, this, waitingPerson));
+                waitingPerson.placeOrder(food, table, waitingPerson, this);
                 //eating is represented here by take
                 Plate plate = meals.take();
                 System.out.println(this+" eating "+plate.getFood());
             }
 
-            System.out.println(this+" is done");
+            System.out.println(this + " is done");
+            table.customerList.remove(this);
             countDownLatch.countDown();
-            countDownLatch.await();
-            tablePool.checkIn(table);
-            System.out.println(table+" checked in");
 
         }catch (InterruptedException ie){
             System.out.println(this+" is interrupted");
@@ -59,5 +55,16 @@ public class Customer implements Runnable{
     @Override
     public String toString() {
         return "Customer "+id;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        Customer customer = (Customer)obj;
+        return id == customer.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
     }
 }

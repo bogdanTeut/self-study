@@ -1,5 +1,7 @@
 package concurrency.simulation.restaurantwithtables;
 
+import concurrency.simulation.restaurant.Food;
+
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -29,13 +31,31 @@ public class WaitingPerson implements Runnable{
         }
     }
 
-    public void placeOrder(OrderTicket orderTicket) throws InterruptedException {
+    public void placeOrder(Food food, Table table, WaitingPerson waitingPerson, Customer customer) throws InterruptedException {
+        if (table.getOrderTicket() == null) table.setOrderTicket(new OrderTicket(table, waitingPerson));
+        OrderTicket orderTicket = table.getOrderTicket();
+        orderTicket.individualOrders.put(customer, food);
+
+        //not all of the customers are ready yet
+        if (table.getNumberOfCustomers() != table.customerList.size()) {
+            System.out.println("Not all of the customers are ready yet");
+            return;
+        }
+
+        if (orderTicket.individualOrders.size() != table.getNumberOfCustomers()) {
+            System.out.println("Not all of the customers are ready to order yet");
+            return;
+        }
+
         System.out.println(this+" placing "+ orderTicket);
         restaurant.orderTickets.put(orderTicket);
+        table.setOrderTicket(null);
+
     }
 
     @Override
     public String toString() {
         return "WaitingPerson "+id;
     }
+
 }

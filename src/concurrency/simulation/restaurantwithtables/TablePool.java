@@ -17,6 +17,9 @@ public class TablePool {
         semaphore = new Semaphore(numberOfTables, true);
         tables = new ArrayList<Table>();
         checkedOut = new boolean[numberOfTables];
+        for (int i = 0; i <numberOfTables ; i++) {
+            tables.add(new Table());
+        }
     }
 
     public Table checkOut() throws InterruptedException {
@@ -26,9 +29,10 @@ public class TablePool {
         return table;
     }
 
-    public Table getTable() {
+    public synchronized Table getTable() {
         for (int i = 0; i <checkedOut.length ; i++) {
             if (!checkedOut[i]){
+                checkedOut[i] = true;
                 return tables.get(i);
             }
         }

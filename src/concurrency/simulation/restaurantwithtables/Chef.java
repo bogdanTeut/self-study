@@ -1,5 +1,8 @@
 package concurrency.simulation.restaurantwithtables;
 
+import concurrency.simulation.restaurant.Food;
+
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -23,7 +26,9 @@ public class Chef implements Runnable{
                 System.out.println(orderTicket +" is starting getting prepared by "+this);
                 TimeUnit.MILLISECONDS.sleep(200);
                 //here prepare food is represented by a tinny sleep
-                orderTicket.getWaitingPerson().filledOrders.put(new Plate(orderTicket.getCustomer(), orderTicket.getFood()));
+                for (Map.Entry<Customer, Food> entry:orderTicket.individualOrders.entrySet()){
+                    orderTicket.getWaitingPerson().filledOrders.put(new Plate(entry.getKey(), entry.getValue()));
+                }
             }
         }catch (InterruptedException ie){
             System.out.println(this+" is dismissed");
