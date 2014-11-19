@@ -8,6 +8,10 @@ import java.util.concurrent.TimeUnit;
  */
 public class EngineRobot extends Robot implements Runnable{
 
+    public EngineRobot(RobotPool robotPool) {
+        super(robotPool);
+    }
+
     @Override
     public void performService() {
         assembler.car.setEngine(true);

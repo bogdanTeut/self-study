@@ -11,7 +11,7 @@ public class Assembler implements Runnable {
 
     private LinkedBlockingQueue<Car> chassisQueue;
     private LinkedBlockingQueue<Car> reportingQueue;
-    protected CyclicBarrier cyclicBarrier = new CyclicBarrier(4);
+    protected CyclicBarrier cyclicBarrier = new CyclicBarrier(7);
     protected Car car;
     private RobotPool robotPool;
 
@@ -27,14 +27,17 @@ public class Assembler implements Runnable {
             while (!Thread.interrupted()){
                 car = chassisQueue.take();
 
-                Robot engineRobot = (EngineRobot) robotPool.getRobot(EngineRobot.class);
-                engineRobot.engage(this);
+                robotPool.hireRobot(EngineRobot.class, this);
 
-                Robot driveTrainRobot = robotPool.getRobot(DriveTrainRobot.class);
-                driveTrainRobot.engage(this);
+                robotPool.hireRobot(DriveTrainRobot.class, this);
 
-                Robot wheelsRobot = robotPool.getRobot(WheelsRobot.class);
-                wheelsRobot.engage(this);
+                robotPool.hireRobot(WheelsRobot.class, this);
+
+                robotPool.hireRobot(BodyRobot.class, this);
+
+                robotPool.hireRobot(FendersRobot.class, this);
+
+                robotPool.hireRobot(ExhaustSystemRobot.class, this);
 
                 cyclicBarrier.await();
                 reportingQueue.put(car);

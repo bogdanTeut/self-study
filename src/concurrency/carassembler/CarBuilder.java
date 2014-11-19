@@ -17,12 +17,12 @@ public class CarBuilder {
         executorService.execute(new ChassisBuilder(chassisQueue));
 
         RobotPool robotPool = new RobotPool();
-        EngineRobot engineRobot = new EngineRobot();
-        executorService.execute(engineRobot);
-        DriveTrainRobot driveTrainRobot = new DriveTrainRobot();
-        executorService.execute(driveTrainRobot);
-        WheelsRobot wheelsRobot = new WheelsRobot();
-        executorService.execute(wheelsRobot);
+        executorService.execute(new EngineRobot(robotPool));
+        executorService.execute(new DriveTrainRobot(robotPool));
+        executorService.execute(new WheelsRobot(robotPool));
+        executorService.execute(new BodyRobot(robotPool));
+        executorService.execute(new FendersRobot(robotPool));
+        executorService.execute(new ExhaustSystemRobot(robotPool));
         executorService.execute(new Assembler(chassisQueue, reportingQueue, robotPool));
         executorService.execute(new CarReporter(reportingQueue));
 

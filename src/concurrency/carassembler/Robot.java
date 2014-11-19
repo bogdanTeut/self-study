@@ -11,6 +11,11 @@ public abstract class Robot implements Runnable{
 
     protected boolean engaged;
     protected Assembler assembler;
+    protected RobotPool robotPool;
+
+    protected Robot(RobotPool robotPool) {
+        this.robotPool = robotPool;
+    }
 
     @Override
     public synchronized void run() {
@@ -39,6 +44,7 @@ public abstract class Robot implements Runnable{
 
     public synchronized void powerDown() throws InterruptedException {
         engaged = false;
+        robotPool.release(this);
         while (!engaged){
             wait();
         }

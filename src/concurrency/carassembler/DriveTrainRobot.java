@@ -8,6 +8,10 @@ import java.util.concurrent.TimeUnit;
  */
 public class DriveTrainRobot extends Robot implements Runnable{
 
+    public DriveTrainRobot(RobotPool robotPool) {
+        super(robotPool);
+    }
+
     @Override
     public void performService() {
         assembler.car.setDriveTrain(true);
