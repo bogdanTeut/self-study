@@ -20,16 +20,7 @@ public class LongInterruptingRunningTask extends JFrame {
         buttonOne.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                    executorService.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            try{
-                                TimeUnit.SECONDS.sleep(3);
-                            } catch (InterruptedException e1) {
-                                System.out.println("Sleep interrupted");
-                            }
-                        }
-                    });
+                    executorService.execute(new Task());
             }
         });
 
@@ -45,6 +36,6 @@ public class LongInterruptingRunningTask extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingConsole.run(new LongInterruptingRunningTask(), 200, 150);
+        SwingConsole.run(new LongInterruptingRunningTask(), 200, 100);
     }
 }
