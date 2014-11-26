@@ -29,7 +29,7 @@ public class QuickSortTest {
     }
 
     private int[] sort(int[] array) {
-        return QuickSort.sort(array);
+        return QuickSort.sort(array, 0, array.length-1);
     }
 
 

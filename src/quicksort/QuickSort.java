@@ -4,7 +4,7 @@ package quicksort;
  * Created by bogdan.teut on 25/11/2014.
  */
 public class QuickSort {
-    public static int[] sort(int[] array, left, right) {
+    public static int[] sort(int[] array, int left, int right) {
         int pivot = array[right];
         int posIndex = 0;
         for (int i=0;i<array.length-1;i++){
