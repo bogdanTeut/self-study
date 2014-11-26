@@ -19,8 +19,13 @@ public class QuickSortTest {
     }
 
     @Test
-    public void whenPartiallyUnsortedArray(){
+    public void whenPartiallyUnsortedArrayAndPartitioningIsEnough(){
         Assert.assertEquals(new int[]{0, 1, 2}, sort(new int[]{0, 2, 1}));
+    }
+
+    @Test
+    public void whenPartiallyUnsortedArrayAndReapplyingAlgorithmIsNecessary(){
+        Assert.assertEquals(new int[]{0, 1, 2}, sort(new int[]{1, 0, 2}));
     }
 
     private int[] sort(int[] array) {
