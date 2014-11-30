@@ -5,26 +5,18 @@ package quicksort;
  */
 public class QuickSort {
     public static int[] sort(int[] array, int left, int right) {
-        if (left > right) return null;
-        int index = partition(array, left, right);
-        sort(array, left, index - 1);
-        sort(array, index + 1, right);
-        return array;
-    }
-
-    private static int partition(int[] array, int left, int right) {
         int pivot = array[right];
-        int posIndex = left;
-        for (int i=left;i<right;i++){
+        int posIndex = 0;
+        for (int i=0;i<array.length-1;i++){
             if (array[i] < pivot){
                 swap(array, i, posIndex++);
             }
         }
 
-        swap(array, posIndex, right);
-//        posIndex++;
+        swap(array, posIndex, array.length-1);
+        posIndex++;
 
-        return posIndex;
+        return array;
     }
 
     private static void swap(int[] array, int x, int y) {
