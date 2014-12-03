@@ -10,6 +10,7 @@ public class BinarySearchNode<T extends Comparable> implements Comparable<T> {
     BinarySearchNode<T> left;
     BinarySearchNode<T> right;
 
+
     public BinarySearchNode(T value) {
         this.value = value;
     }
