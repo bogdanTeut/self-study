@@ -12,6 +12,7 @@ public class BinarySearchTreeTest {
     public void insertRootElement(){
         BinarySearchTree<Integer> binarySearchTree = getBinarySearchTreeWithRootElement();
         Assert.assertEquals(19, binarySearchTree.root.value.intValue());
+        binarySearchTree.dfs(binarySearchTree.root);
     }
 
     @Test
@@ -20,6 +21,7 @@ public class BinarySearchTreeTest {
         binarySearchTree.insert(11);
         Assert.assertEquals(19, binarySearchTree.root.value.intValue());
         Assert.assertEquals(11, binarySearchTree.root.left.value.intValue());
+        binarySearchTree.dfs(binarySearchTree.root);
     }
 
     @Test
@@ -28,6 +30,7 @@ public class BinarySearchTreeTest {
         binarySearchTree.insert(35);
         Assert.assertEquals(19, binarySearchTree.root.value.intValue());
         Assert.assertEquals(35, binarySearchTree.root.right.value.intValue());
+        binarySearchTree.dfs(binarySearchTree.root);
     }
 
     @Test
@@ -38,6 +41,7 @@ public class BinarySearchTreeTest {
         Assert.assertEquals(19, binarySearchTree.root.value.intValue());
         Assert.assertEquals(11, binarySearchTree.root.left.value.intValue());
         Assert.assertEquals(7, binarySearchTree.root.left.left.value.intValue());
+        binarySearchTree.dfs(binarySearchTree.root);
     }
 
     @Test
@@ -48,6 +52,7 @@ public class BinarySearchTreeTest {
         Assert.assertEquals(19, binarySearchTree.root.value.intValue());
         Assert.assertEquals(11, binarySearchTree.root.left.value.intValue());
         Assert.assertEquals(16, binarySearchTree.root.left.right.value.intValue());
+        binarySearchTree.dfs(binarySearchTree.root);
     }
 
     @Test
@@ -58,6 +63,7 @@ public class BinarySearchTreeTest {
         Assert.assertEquals(19, binarySearchTree.root.value.intValue());
         Assert.assertEquals(35, binarySearchTree.root.right.value.intValue());
         Assert.assertEquals(23, binarySearchTree.root.right.left.value.intValue());
+        binarySearchTree.dfs(binarySearchTree.root);
     }
 
     @Test
@@ -70,6 +76,7 @@ public class BinarySearchTreeTest {
         Assert.assertEquals(11, binarySearchTree.root.left.value.intValue());
         Assert.assertEquals(16, binarySearchTree.root.left.right.value.intValue());
         Assert.assertEquals(13, binarySearchTree.root.left.right.left.value.intValue());
+        binarySearchTree.dfs(binarySearchTree.root);
     }
 
     @Test
@@ -83,6 +90,7 @@ public class BinarySearchTreeTest {
         Assert.assertEquals(17, binarySearchTree.root.left.right.right.value.intValue());
         Assert.assertEquals(35, binarySearchTree.root.right.value.intValue());
         Assert.assertEquals(23, binarySearchTree.root.right.left.value.intValue());
+        binarySearchTree.dfs(binarySearchTree.root);
     }
 
     @Test
@@ -118,6 +126,142 @@ public class BinarySearchTreeTest {
         BinarySearchTree<Integer> binarySearchTree = getBinarySearchTreeWithRootElement();
         binarySearchTree.insert(35);
         Assert.assertNull(binarySearchTree.find(36));
+    }
+
+    @Test
+    public void deleteTheOneElement() {
+        BinarySearchTree<Integer> binarySearchTree = getBinarySearchTreeWithRootElement();
+        binarySearchTree.delete (19);
+        Assert.assertNull(binarySearchTree.find(19));
+    }
+
+    @Test
+    public void deleteLeftLeaf() {
+        BinarySearchTree<Integer> binarySearchTree = getBinarySearchTreeWithRootElement();
+        binarySearchTree.insert(11);
+        binarySearchTree.delete (11);
+        Assert.assertNotNull(binarySearchTree.find(19));
+        Assert.assertNull(binarySearchTree.find(11));
+    }
+
+    @Test
+    public void deleteRightLeaf() {
+        BinarySearchTree<Integer> binarySearchTree = getBinarySearchTreeWithRootElement();
+        binarySearchTree.insert(35);
+        binarySearchTree.delete(35);
+        Assert.assertNotNull(binarySearchTree.find(19));
+        Assert.assertNull(binarySearchTree.find(35));
+    }
+
+    @Test
+    public void deleteLeftLeafOfDepthTwoTree() {
+        BinarySearchTree<Integer> binarySearchTree = getBinarySearchTreeWithRootElement();
+        binarySearchTree.insert(11);
+        binarySearchTree.insert(7);
+        binarySearchTree.delete (7);
+        Assert.assertNotNull(binarySearchTree.find(19));
+        Assert.assertNotNull(binarySearchTree.find(11));
+        Assert.assertNull(binarySearchTree.find(7));
+    }
+
+    @Test
+    public void deleteLeftRightOfDepthTwoTree() {
+        BinarySearchTree<Integer> binarySearchTree = getBinarySearchTreeWithRootElement();
+        binarySearchTree.insert(11);
+        binarySearchTree.insert(7);
+        binarySearchTree.insert(16);
+        binarySearchTree.delete (16);
+        Assert.assertNotNull(binarySearchTree.find(19));
+        Assert.assertNotNull(binarySearchTree.find(11));
+        Assert.assertNotNull(binarySearchTree.find(7));
+        Assert.assertNull(binarySearchTree.find(16));
+    }
+
+    @Test
+    public void deleteRightLeftOfDepthTwoTree() {
+        BinarySearchTree<Integer> binarySearchTree = getBinarySearchTreeWithRootElement();
+        binarySearchTree.insert(35);
+        binarySearchTree.insert(23);
+        binarySearchTree.delete (23);
+        Assert.assertNotNull(binarySearchTree.find(19));
+        Assert.assertNotNull(binarySearchTree.find(35));
+        Assert.assertNull(binarySearchTree.find(23));
+    }
+
+    @Test
+    public void deleteElementWithOneChildLeft() {
+        BinarySearchTree<Integer> binarySearchTree = getBinarySearchTreeWithRootElement();
+        binarySearchTree.insert(35);
+        binarySearchTree.insert(23);
+        binarySearchTree.delete (35);
+        Assert.assertNotNull(binarySearchTree.find(19));
+        Assert.assertNotNull(binarySearchTree.find(23));
+        Assert.assertNull(binarySearchTree.find(35));
+
+        binarySearchTree.insert(11);
+        binarySearchTree.insert(7);
+        binarySearchTree.delete (11);
+        Assert.assertNotNull(binarySearchTree.find(19));
+        Assert.assertNotNull(binarySearchTree.find(7));
+        Assert.assertNull(binarySearchTree.find(11));
+
+    }
+
+    @Test
+    public void deleteElementWithOneChildRight() {
+        BinarySearchTree<Integer> binarySearchTree = getBinarySearchTreeWithRootElement();
+        binarySearchTree.insert(35);
+        binarySearchTree.insert(40);
+        binarySearchTree.delete (35);
+        Assert.assertNotNull(binarySearchTree.find(19));
+        Assert.assertNull(binarySearchTree.find(35));
+        Assert.assertNotNull(binarySearchTree.find(40));
+
+        binarySearchTree.insert(11);
+        binarySearchTree.insert(16);
+        binarySearchTree.delete (11);
+        Assert.assertNotNull(binarySearchTree.find(19));
+        Assert.assertNull(binarySearchTree.find(11));
+        Assert.assertNotNull(binarySearchTree.find(16));
+    }
+
+    @Test
+    public void deleteElementWithOneChild() {
+        BinarySearchTree<Integer> binarySearchTree = getBinarySearchTreeWithRootElement();
+        binarySearchTree.insert(35);
+        binarySearchTree.insert(23);
+        binarySearchTree.insert(40);
+        binarySearchTree.insert(38);
+        binarySearchTree.delete (40);
+        Assert.assertNotNull(binarySearchTree.find(19));
+        Assert.assertNotNull(binarySearchTree.find(23));
+        Assert.assertNotNull(binarySearchTree.find(38));
+        Assert.assertNull(binarySearchTree.find(40));
+
+        binarySearchTree.insert(11);
+        binarySearchTree.insert(7);
+        binarySearchTree.insert(9);
+        binarySearchTree.insert(16);
+        binarySearchTree.delete (7);
+        Assert.assertNotNull(binarySearchTree.find(19));
+        Assert.assertNotNull(binarySearchTree.find(11));
+        Assert.assertNotNull(binarySearchTree.find(9));
+        Assert.assertNotNull(binarySearchTree.find(16));
+        Assert.assertNull(binarySearchTree.find(7));
+    }
+
+    @Test
+    public void deleteTwoChildrenNode() {
+        BinarySearchTree<Integer> binarySearchTree = getBinarySearchTreeWithRootElement();
+        binarySearchTree.insert(11);
+        binarySearchTree.insert(7);
+        binarySearchTree.insert(16);
+        binarySearchTree.insert(14);
+        binarySearchTree.delete (11);
+        Assert.assertNotNull(binarySearchTree.find(19));
+        Assert.assertNull(binarySearchTree.find(11));
+        Assert.assertNotNull(binarySearchTree.find(7));
+        Assert.assertNotNull(binarySearchTree.find(16));
     }
 
 

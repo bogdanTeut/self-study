@@ -17,4 +17,11 @@ public class BinarySearchNode<T extends Comparable> implements Comparable<T> {
     public int compareTo(T o) {
         return this.compareTo(o);
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) return false;
+        BinarySearchNode<T> other = (BinarySearchNode<T>) obj;
+        return this.value.equals(other.value);
+    }
 }
